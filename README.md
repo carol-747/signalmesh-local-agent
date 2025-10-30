@@ -187,6 +187,41 @@ The demo provides:
 - Semantic search interface
 - RAG system monitoring
 
+## Demo Test Scripts
+
+Two educational test scripts demonstrate the Local Agent in action:
+
+### End-to-End Pipeline Test
+
+Simulates real-world task processing with different scenarios:
+
+```bash
+python tests/test_pipeline.py
+```
+
+Features:
+- 3 test scenarios (weekly update, recent changes, full scan)
+- Detailed input/output message formatting
+- Processing statistics and summaries
+- Shows complete task lifecycle
+
+### Message Bus Simulation
+
+Demonstrates integration with SignalMesh's message bus architecture:
+
+```bash
+python tests/test_message_bus_simulation.py
+```
+
+Features:
+- Mock message bus with pub/sub pattern
+- LocalAgent with message bus integration
+- Mock Reply Agent that drafts emails
+- Complete message flow visualization
+- Shows inter-agent communication
+
+Both scripts provide verbose, educational output with emojis and formatting to help understand how the Local Agent integrates into the larger SignalMesh system.
+
 ## Testing
 
 Run the test suite:
@@ -221,7 +256,9 @@ signalmesh-local-agent/
 ├── demos/
 │   └── local_agent_demo.py   # Streamlit demo application
 ├── tests/
-│   └── test_local_agent.py   # Unit tests
+│   ├── test_local_agent.py           # Unit tests
+│   ├── test_pipeline.py              # End-to-end pipeline demo
+│   └── test_message_bus_simulation.py # Message bus integration demo
 ├── requirements.txt          # Python dependencies
 ├── README.md                 # This file
 └── .gitignore               # Git ignore patterns
