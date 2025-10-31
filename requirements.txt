@@ -1,10 +1,10 @@
 # Core dependencies
-qdrant-client==1.7.0
+qdrant-client>=1.9.0,<2.0.0
 sentence-transformers==2.2.2
 pandas==2.1.0
 nbformat==5.9.2
 python-dotenv==1.0.0
-pydantic==2.5.0
+pydantic>=2.5.0,<3.0.0
 loguru==0.7.2
 streamlit==1.29.0
 

@@ -346,6 +346,55 @@ Core dependencies:
 
 See `requirements.txt` for complete list.
 
+## Troubleshooting
+
+### Qdrant Version Compatibility Error
+
+If you encounter a Pydantic validation error when initializing RAGManager:
+
+```
+pydantic_core._pydantic_core.ValidationError: 10 validation errors for CreateCollection
+```
+
+**Solution 1: Clear RAG Storage** (Recommended)
+
+```bash
+# Delete the old storage directory
+rm -rf data/qdrant_storage
+
+# Or use the helper script
+python scripts/clear_rag_storage.py
+```
+
+**Solution 2: Update Dependencies**
+
+```bash
+# Reinstall with updated versions
+pip install --upgrade qdrant-client pydantic
+```
+
+The storage will be automatically recreated with the correct schema when you next run the agent.
+
+### Missing Dependencies
+
+If you get `ModuleNotFoundError`:
+
+```bash
+# Make sure you're in the project directory
+cd signalmesh-local-agent
+
+# Install all dependencies
+pip install -r requirements.txt
+```
+
+### Permission Errors
+
+If you get permission errors when scanning workspace:
+
+- Ensure the workspace path exists and is readable
+- Check file permissions: `ls -la /path/to/workspace`
+- Try using an absolute path instead of relative path
+
 ## Development
 
 ### Code Quality
