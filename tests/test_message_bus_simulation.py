@@ -172,8 +172,9 @@ class LocalAgentWithBus:
         print(f"\n{Colors.OKCYAN}🤖 Local Agent received task message{Colors.ENDC}")
 
         try:
-            # Extract task details
+            # Extract task details and context
             task_ticket = message.get("task_ticket", {})
+            context = message.get("context", {})
             task_id = task_ticket.get("task_id", "unknown")
 
             # Publish progress: started
@@ -185,8 +186,8 @@ class LocalAgentWithBus:
                 "timestamp": datetime.now().isoformat()
             })
 
-            # Process task
-            result = await self.agent.handle_task(task_ticket)
+            # Process task with context
+            result = await self.agent.handle_task(task_ticket, context)
 
             # Publish progress: completed
             await self.message_bus.publish("local/progress", {
