@@ -250,51 +250,71 @@ def print_output_message(result: Dict[str, Any], scenario: TestScenario) -> None
 
     # Statistics
     print(f"{Colors.BOLD}📊 Processing Statistics{Colors.ENDC}")
-    print_info("Files Scanned", result.get("files_processed", 0))
-    print_info("Files Indexed", result.get("files_indexed", 0))
-    print_info("Processing Time", f"{result.get('processing_time', 0):.2f} seconds")
+    stats = result.get("results", {}).get("statistics", {})
+    perf = result.get("performance", {})
+
+    print_info("Files Scanned", stats.get("files_scanned", result.get("files_processed", 0)))
+    print_info("Files Indexed", stats.get("files_indexed", result.get("files_indexed", 0)))
+    print_info("Processing Time", f"{perf.get('processing_time_seconds', result.get('processing_time', 0)):.2f} seconds")
     print_info("Errors Encountered", len(result.get("errors", [])))
     print()
 
     # File breakdown
-    if result.get("file_list"):
-        print(f"{Colors.BOLD}📁 Files Processed{Colors.ENDC}")
+    files_list = result.get("results", {}).get("files", result.get("file_list", []))
+    breakdown = result.get("results", {}).get("breakdown_by_type", {})
 
-        # Count by type
-        type_counts: Dict[str, int] = {}
-        for file_info in result["file_list"]:
-            file_type = file_info.get("file_type", "other")
-            type_counts[file_type] = type_counts.get(file_type, 0) + 1
+    if breakdown:
+        print(f"{Colors.BOLD}📁 Files by Type{Colors.ENDC}")
 
-        for file_type, count in sorted(type_counts.items()):
+        for file_type, type_info in sorted(breakdown.items()):
             emoji = {
                 "code": "🐍",
                 "data": "📊",
                 "notebook": "📓",
                 "note": "📝"
             }.get(file_type, "📄")
+            count = type_info.get("count", 0)
             print(f"  {emoji} {file_type.capitalize()}: {count} file(s)")
+
+            # Show type-specific details
+            if file_type == "code" and "total_lines" in type_info:
+                print(f"     Lines: {type_info['total_lines']}, Functions: {type_info.get('functions', 0)}, Classes: {type_info.get('classes', 0)}")
+            elif file_type == "data" and "total_rows" in type_info:
+                print(f"     Rows: {type_info['total_rows']}, Columns: {type_info.get('total_columns', 0)}")
 
         print()
 
-        # List files
+    # List files
+    if files_list:
         print(f"{Colors.BOLD}📄 File Details{Colors.ENDC}")
-        for i, file_info in enumerate(result["file_list"], 1):
+        for i, file_info in enumerate(files_list[:10], 1):  # Limit to 10
             name = file_info.get("name", "unknown")
-            file_type = file_info.get("file_type", "other")
-            size_kb = file_info.get("size", 0) / 1024
+            file_type = file_info.get("type", file_info.get("file_type", "other"))
+            size_kb = file_info.get("size_bytes", file_info.get("size", 0)) / 1024
             print(f"  {i}. {name} ({file_type}, {size_kb:.1f} KB)")
+
+        if len(files_list) > 10:
+            print(f"  ... and {len(files_list) - 10} more files")
 
         print()
 
     # Summary
-    if result.get("summary"):
+    summary = result.get("results", {}).get("summary", result.get("summary", ""))
+    if summary:
         print(f"{Colors.BOLD}📝 Generated Summary{Colors.ENDC}")
         print(f"{Colors.OKCYAN}{'─' * 78}{Colors.ENDC}")
-        summary_lines = result["summary"].split("\n")
+        summary_lines = summary.split("\n")
         for line in summary_lines:
             print(f"  {line}")
         print(f"{Colors.OKCYAN}{'─' * 78}{Colors.ENDC}")
+        print()
+
+    # Insights
+    insights = result.get("insights", {})
+    if insights and insights.get("highlights"):
+        print(f"{Colors.BOLD}💡 Key Insights{Colors.ENDC}")
+        for highlight in insights.get("highlights", [])[:5]:
+            print(f"  • {highlight}")
         print()
 
     # Errors
@@ -324,9 +344,9 @@ async def run_scenario(agent: LocalAgent, scenario: TestScenario) -> Dict[str, A
     # Show processing
     print_processing_status()
 
-    # Execute task
+    # Execute task with context
     task_ticket = scenario.to_task_ticket()
-    result = await agent.handle_task(task_ticket)
+    result = await agent.handle_task(task_ticket, scenario.context)
 
     # Show output
     print_output_message(result, scenario)
