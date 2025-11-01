@@ -13,6 +13,21 @@ The SignalMesh Local Agent is designed to scan, parse, and index files in a work
 - **Semantic Search**: RAG-based vector search using Qdrant and sentence transformers
 - **Local-First**: No cloud dependencies - runs entirely on your local machine
 - **Production-Ready**: Complete type hints, error handling, logging, and testing
+- **Reply Agent Ready**: Comprehensive JSON output with context, insights, and suggestions for automated email drafting
+
+## For Integrators (Reply Agent Team)
+
+📘 **[Integration Guide](INTEGRATION_GUIDE.md)** - Complete guide for integrating with Reply Agent
+📄 **[Quick Reference](docs/QUICK_REFERENCE.md)** - Essential fields and code snippets
+📋 **[JSON Schema](docs/output_schema_v1.0.json)** - Output schema v1.0 for validation
+
+The Local Agent outputs comprehensive JSON with:
+- ✅ Original requester context (name, email, question, channel)
+- ✅ Detailed file analysis with insights and highlights
+- ✅ Suggested actions for follow-up
+- ✅ Everything needed to draft personalized email responses
+
+See the [Integration Guide](INTEGRATION_GUIDE.md) for details.
 
 ## Architecture
 
